@@ -7,6 +7,7 @@ import Footer from "@/components/Footer.vue"
 const productStore = useProductStore()
 
 const selectedCategory = ref("Semua")
+const searchQuery = ref("")
 
 const categories = computed(() => {
   const categoryNames = productStore.products
@@ -17,12 +18,19 @@ const categories = computed(() => {
 })
 
 const filteredProducts = computed(() => {
-  if (selectedCategory.value === "Semua") {
-    return productStore.products
-  }
-
   return productStore.products.filter((product: any) => {
-    return product.category?.name === selectedCategory.value
+    const matchCategory =
+      selectedCategory.value === "Semua" ||
+      product.category?.name === selectedCategory.value
+
+    const keyword = searchQuery.value.toLowerCase()
+
+    const matchSearch =
+      product.name?.toLowerCase().includes(keyword) ||
+      product.description?.toLowerCase().includes(keyword) ||
+      product.category?.name?.toLowerCase().includes(keyword)
+
+    return matchCategory && matchSearch
   })
 })
 
@@ -34,9 +42,8 @@ onMounted(() => {
 <template>
   <section class="min-h-screen bg-white px-5 pt-28 pb-16 text-primary">
     <div class="mx-auto max-w-6xl">
-      <!-- Header -->
       <div class="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-        <div>
+        <div class="w-full">
           <h1 class="text-5xl font-extrabold tracking-tight md:text-6xl">
             Trending Outfits
           </h1>
@@ -46,7 +53,17 @@ onMounted(() => {
             untuk gaya harian kamu.
           </p>
 
-          <!-- Category dari database -->
+          <!-- Search -->
+          <div class="mt-6 max-w-md">
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Cari produk..."
+              class="w-full rounded-2xl border border-primary/10 bg-white px-5 py-3 text-sm text-primary shadow-sm outline-none transition placeholder:text-primary/40 focus:border-primary/40 focus:ring-4 focus:ring-primary/10"
+            />
+          </div>
+
+          <!-- Category -->
           <div class="mt-4 flex flex-wrap gap-3">
             <button
               v-for="category in categories"
@@ -89,7 +106,7 @@ onMounted(() => {
         class="rounded-2xl bg-white/70 p-10 text-center shadow-sm"
       >
         <p class="text-sm text-primary/70">
-          Belum ada produk tersedia di kategori {{ selectedCategory }}.
+          Produk tidak ditemukan.
         </p>
       </div>
 
