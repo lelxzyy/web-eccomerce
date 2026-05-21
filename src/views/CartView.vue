@@ -1,92 +1,77 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue"
-import { useCartStore } from "@/stores/cartStore"
-import Footer from "@/components/Footer.vue"
-import axios from "axios"
+import { onMounted, ref } from 'vue'
+import { useCartStore } from '@/stores/cartStore'
+import Footer from '@/components/AppFooter.vue'
+import { OrderService } from '@/services/orderService'
 
 const cartStore = useCartStore()
 
-const user = JSON.parse(localStorage.getItem("user") || "{}")
+const user = JSON.parse(localStorage.getItem('user') || '{}')
 
-const receiverName = ref(user.name || "")
-const phone = ref(user.phone || "")
-const address = ref(user.address || "")
+const receiverName = ref(user.name || '')
+const phone = ref(user.phone || '')
+const address = ref(user.address || '')
 
 onMounted(() => {
   cartStore.loadCart()
 })
 
 const formatRupiah = (price: number) => {
-  return price.toLocaleString("id-ID")
+  return price.toLocaleString('id-ID')
 }
 
 const checkout = async () => {
   try {
     if (!receiverName.value) {
-      alert("Nama penerima belum diisi")
+      alert('Nama penerima belum diisi')
       return
     }
 
     if (!phone.value) {
-      alert("Nomor telepon belum diisi")
+      alert('Nomor telepon belum diisi')
       return
     }
 
     if (!address.value) {
-      alert("Alamat belum diisi")
+      alert('Alamat belum diisi')
       return
     }
 
-    const total =
-      cartStore.totalPrice +
-      Math.round(cartStore.totalPrice * 0.08)
+    const total = cartStore.totalPrice + Math.round(cartStore.totalPrice * 0.08)
 
-    const token = localStorage.getItem("token")
+    const data = await OrderService.checkout({
+      amount: total,
+      receiver_name: receiverName.value,
+      phone: phone.value,
+      address: address.value,
+      items: cartStore.items.map((item) => ({
+        product_id: item.product.id,
+        name: item.product.name,
+        quantity: item.qty,
+        price: item.product.price,
+        category: item.product.category?.name || 'Produk',
+      })),
+    })
 
-    const response = await axios.post(
-      "https://pay.lelxzyy.my.id/api/checkout/xendit",
-      {
-        amount: total,
-        receiver_name: receiverName.value,
-        phone: phone.value,
-        address: address.value,
-
-        items: cartStore.items.map((item) => ({
-          product_id: item.product.id,
-          name: item.product.name,
-          quantity: item.qty,
-          price: item.product.price,
-          category: item.product.category?.name || "Produk",
-        })),
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-
-    if (response.data.payment_url) {
-      window.location.href = response.data.payment_url
-    } else if (response.data.invoice_url) {
-      window.location.href = response.data.invoice_url
+    if (data.payment_url) {
+      window.location.href = data.payment_url
+    } else if (data.invoice_url) {
+      window.location.href = data.invoice_url
     } else {
-      alert("Invoice gagal dibuat")
+      alert('Invoice gagal dibuat')
     }
   } catch (error) {
     console.error(error)
-    alert("Checkout gagal")
+    alert('Checkout gagal')
   }
 }
 </script>
 
 <template>
-  <section class="min-h-screen bg-white px-5 pt-28 pb-10 text-primary">
+  <section class="min-h-screen bg-background px-5 pt-28 pb-10 text-primary">
     <div class="mx-auto max-w-6xl">
       <div class="mb-10">
-        <h1 class="text-4xl font-bold md:text-5xl">
-          Keranjang kamu
-        </h1>
+        <h1 class="text-4xl font-bold md:text-5xl">Keranjang kamu</h1>
 
         <p class="mt-2 text-sm text-primary/70">
           Kamu memiliki {{ cartStore.totalItems }} item di keranjang
@@ -104,9 +89,7 @@ const checkout = async () => {
         v-else-if="cartStore.items.length === 0"
         class="rounded-2xl bg-white p-12 text-center shadow-sm"
       >
-        <p class="mb-5 text-xl font-semibold">
-          Keranjang masih kosong
-        </p>
+        <p class="mb-5 text-xl font-semibold">Keranjang masih kosong</p>
 
         <router-link
           to="/product"
@@ -134,9 +117,7 @@ const checkout = async () => {
                   {{ item.product.name }}
                 </h2>
 
-                <p class="mt-1 text-sm text-primary/70">
-                  Stok: {{ item.product.stock }}
-                </p>
+                <p class="mt-1 text-sm text-primary/70">Stok: {{ item.product.stock }}</p>
 
                 <p class="mt-1 text-sm text-primary/60">
                   {{ item.product.description }}
@@ -183,54 +164,43 @@ const checkout = async () => {
             </div>
           </div>
 
-          <router-link
-            to="/product"
-            class="text-sm text-primary/70 hover:underline"
-          >
+          <router-link to="/product" class="text-sm text-primary/70 hover:underline">
             ← Lanjut belanja
           </router-link>
         </div>
 
         <aside class="h-fit rounded-2xl bg-white p-8 shadow-sm">
-          <h2 class="mb-6 text-xl font-bold">
-            Ringkasan Pesanan
-          </h2>
+          <h2 class="mb-6 text-xl font-bold">Ringkasan Pesanan</h2>
 
           <div class="mb-4">
-            <label class="mb-2 block text-sm font-semibold text-primary">
-              Nama Penerima
-            </label>
+            <label class="mb-2 block text-sm font-semibold text-primary"> Nama Penerima </label>
 
             <input
               v-model="receiverName"
               type="text"
-              class="w-full rounded-2xl border border-black/10 bg-soft/20 px-4 py-3 text-sm outline-none focus:border-accent2"
+              class="w-full rounded-2xl border border-primary/10 bg-soft/20 px-4 py-3 text-sm outline-none focus:border-accent2"
               placeholder="Masukkan nama penerima"
             />
           </div>
 
           <div class="mb-4">
-            <label class="mb-2 block text-sm font-semibold text-primary">
-              Nomor Telepon
-            </label>
+            <label class="mb-2 block text-sm font-semibold text-primary"> Nomor Telepon </label>
 
             <input
               v-model="phone"
               type="text"
-              class="w-full rounded-2xl border border-black/10 bg-soft/20 px-4 py-3 text-sm outline-none focus:border-accent2"
+              class="w-full rounded-2xl border border-primary/10 bg-soft/20 px-4 py-3 text-sm outline-none focus:border-accent2"
               placeholder="Masukkan nomor telepon"
             />
           </div>
 
           <div class="mb-6">
-            <label class="mb-2 block text-sm font-semibold text-primary">
-              Alamat Pengiriman
-            </label>
+            <label class="mb-2 block text-sm font-semibold text-primary"> Alamat Pengiriman </label>
 
             <textarea
               v-model="address"
               rows="4"
-              class="w-full rounded-2xl border border-black/10 bg-soft/20 px-4 py-3 text-sm outline-none focus:border-accent2"
+              class="w-full rounded-2xl border border-primary/10 bg-soft/20 px-4 py-3 text-sm outline-none focus:border-accent2"
               placeholder="Masukkan alamat lengkap"
             ></textarea>
 
@@ -242,16 +212,12 @@ const checkout = async () => {
           <div class="space-y-4 text-sm">
             <div class="flex justify-between text-primary/70">
               <span>Subtotal</span>
-              <span class="text-primary">
-                Rp {{ formatRupiah(cartStore.totalPrice) }}
-              </span>
+              <span class="text-primary"> Rp {{ formatRupiah(cartStore.totalPrice) }} </span>
             </div>
 
             <div class="flex justify-between text-primary/70">
               <span>Pengiriman</span>
-              <span class="text-primary">
-                Dihitung nanti
-              </span>
+              <span class="text-primary"> Dihitung nanti </span>
             </div>
 
             <div class="flex justify-between text-primary/70">
@@ -266,12 +232,8 @@ const checkout = async () => {
             <div class="flex justify-between text-lg font-bold">
               <span>Total</span>
               <span class="text-accent2">
-                Rp {{
-                  formatRupiah(
-                    cartStore.totalPrice +
-                    Math.round(cartStore.totalPrice * 0.08)
-                  )
-                }}
+                Rp
+                {{ formatRupiah(cartStore.totalPrice + Math.round(cartStore.totalPrice * 0.08)) }}
               </span>
             </div>
           </div>

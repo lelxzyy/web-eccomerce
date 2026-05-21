@@ -1,16 +1,16 @@
-import { defineStore } from "pinia"
-import * as authService from "@/services/authService"
-import type { User, LoginPayload, RegisterPayload } from "@/types/auth"
+import { defineStore } from 'pinia'
+import * as authService from '@/services/authService'
+import type { User, LoginPayload, RegisterPayload } from '@/types/auth'
 
-export const useAuthStore = defineStore("auth", {
+export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as User | null,
-    token: localStorage.getItem("token") || "",
-    loading: false
+    token: localStorage.getItem('token') || '',
+    loading: false,
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.token
+    isAuthenticated: (state) => !!state.token,
   },
 
   actions: {
@@ -23,9 +23,9 @@ export const useAuthStore = defineStore("auth", {
         this.token = res.token
         this.user = res.user
 
-        localStorage.setItem("token", res.token)
+        localStorage.setItem('token', res.token)
       } catch (error) {
-        console.error("Login gagal:", error)
+        console.error('Login gagal:', error)
       } finally {
         this.loading = false
       }
@@ -40,9 +40,9 @@ export const useAuthStore = defineStore("auth", {
         this.token = res.token
         this.user = res.user
 
-        localStorage.setItem("token", res.token)
+        localStorage.setItem('token', res.token)
       } catch (error) {
-        console.error("Register gagal:", error)
+        console.error('Register gagal:', error)
       } finally {
         this.loading = false
       }
@@ -53,14 +53,14 @@ export const useAuthStore = defineStore("auth", {
         const res = await authService.getProfile()
         this.user = res.user
       } catch (error) {
-        console.error("Ambil user gagal:", error)
+        console.error('Ambil user gagal:', error)
       }
     },
 
     logout() {
       this.user = null
-      this.token = ""
-      localStorage.removeItem("token")
-    }
-  }
+      this.token = ''
+      localStorage.removeItem('token')
+    },
+  },
 })

@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue"
-import { useProductStore } from "@/stores/productStore"
-import ProductCard from "@/components/Products/ProductCard.vue"
-import Footer from "@/components/Footer.vue"
+import { onMounted, ref, computed } from 'vue'
+import { useProductStore } from '@/stores/productStore'
+import ProductCard from '@/components/Products/ProductCard.vue'
+import Footer from '@/components/AppFooter.vue'
+import type { Product } from '@/types/product'
 
 const productStore = useProductStore()
 
-const selectedCategory = ref("Semua")
-const searchQuery = ref("")
+const selectedCategory = ref('Semua')
+const searchQuery = ref('')
 
-const categories = computed(() => {
+const categories = computed<string[]>(() => {
   const categoryNames = productStore.products
-    .map((product: any) => product.category?.name)
-    .filter(Boolean)
+    .map((product: Product) => product.category?.name)
+    .filter((name): name is string => Boolean(name))
 
-  return ["Semua", ...new Set(categoryNames)]
+  return ['Semua', ...new Set(categoryNames)]
 })
 
 const filteredProducts = computed(() => {
-  return productStore.products.filter((product: any) => {
+  return productStore.products.filter((product: Product) => {
     const matchCategory =
-      selectedCategory.value === "Semua" ||
-      product.category?.name === selectedCategory.value
+      selectedCategory.value === 'Semua' || product.category?.name === selectedCategory.value
 
     const keyword = searchQuery.value.toLowerCase()
 
     const matchSearch =
-      product.name?.toLowerCase().includes(keyword) ||
-      product.description?.toLowerCase().includes(keyword) ||
-      product.category?.name?.toLowerCase().includes(keyword)
+      product.name.toLowerCase().includes(keyword) ||
+      (product.description ?? '').toLowerCase().includes(keyword) ||
+      (product.category?.name ?? '').toLowerCase().includes(keyword)
 
     return matchCategory && matchSearch
   })
@@ -40,20 +40,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="min-h-screen bg-white px-5 pt-28 pb-16 text-primary">
+  <section class="min-h-screen bg-background px-5 pt-28 pb-16 text-primary">
     <div class="mx-auto max-w-6xl">
       <div class="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div class="w-full">
-          <h1 class="text-5xl font-extrabold tracking-tight md:text-6xl">
-            Trending Outfits
-          </h1>
+          <h1 class="text-5xl font-extrabold tracking-tight md:text-6xl">Trending Outfits</h1>
 
           <p class="mt-4 max-w-xl text-sm leading-6 text-primary">
-            Koleksi outfit pilihan dengan tampilan elegan, modern, dan cocok
-            untuk gaya harian kamu.
+            Koleksi outfit pilihan dengan tampilan elegan, modern, dan cocok untuk gaya harian kamu.
           </p>
 
-          <!-- Search -->
           <div class="mt-6 max-w-md">
             <input
               v-model="searchQuery"
@@ -63,7 +59,6 @@ onMounted(() => {
             />
           </div>
 
-          <!-- Category -->
           <div class="mt-4 flex flex-wrap gap-3">
             <button
               v-for="category in categories"
@@ -73,7 +68,7 @@ onMounted(() => {
                 'rounded-full px-6 py-2 text-sm font-semibold transition',
                 selectedCategory === category
                   ? 'bg-primary text-white'
-                  : 'bg-white/50 text-primary/60 hover:bg-primary/10'
+                  : 'bg-white/50 text-primary/60 hover:bg-primary/10',
               ]"
             >
               {{ category }}
@@ -88,7 +83,6 @@ onMounted(() => {
         </button>
       </div>
 
-      <!-- Loading Skeleton -->
       <div
         v-if="productStore.loading"
         class="grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
@@ -100,26 +94,15 @@ onMounted(() => {
         ></div>
       </div>
 
-      <!-- Empty -->
       <div
         v-else-if="filteredProducts.length === 0"
         class="rounded-2xl bg-white/70 p-10 text-center shadow-sm"
       >
-        <p class="text-sm text-primary/70">
-          Produk tidak ditemukan.
-        </p>
+        <p class="text-sm text-primary/70">Produk tidak ditemukan.</p>
       </div>
 
-      <!-- Product Grid -->
-      <div
-        v-else
-        class="grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-      >
-        <ProductCard
-          v-for="product in filteredProducts"
-          :key="product.id"
-          :product="product"
-        />
+      <div v-else class="grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <ProductCard v-for="product in filteredProducts" :key="product.id" :product="product" />
       </div>
     </div>
   </section>

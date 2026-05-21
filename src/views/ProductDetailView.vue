@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import { useProductStore } from "@/stores/productStore"
-import { useCartStore } from "@/stores/cartStore"
-
+import { computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useProductStore } from '@/stores/productStore'
+import { useCartStore } from '@/stores/cartStore'
+import Footer from '@/components/AppFooter.vue'
 const route = useRoute()
 const router = useRouter()
 const productStore = useProductStore()
@@ -22,7 +22,7 @@ const product = computed(() => {
 })
 
 const formatRupiah = (price: number) => {
-  return price.toLocaleString("id-ID")
+  return price.toLocaleString('id-ID')
 }
 
 const addToCart = () => {
@@ -33,14 +33,12 @@ const addToCart = () => {
 const buyNow = () => {
   if (!product.value) return
   cartStore.addToCart(product.value)
-  router.push("/cart")
+  router.push('/cart')
 }
 </script>
 
 <template>
-  <section
-    class="min-h-screen bg-white px-4 pt-24 pb-10"
-  >
+  <section class="min-h-screen bg-background px-4 pt-24 pb-10">
     <div class="mx-auto max-w-5xl">
       <button
         @click="router.back()"
@@ -49,9 +47,7 @@ const buyNow = () => {
         Kembali
       </button>
 
-      <div v-if="productStore.loading" class="text-center text-primary">
-        Loading...
-      </div>
+      <div v-if="productStore.loading" class="text-center text-primary">Loading...</div>
 
       <div
         v-else-if="product"
@@ -66,13 +62,12 @@ const buyNow = () => {
           />
         </div>
 
-        <!-- Detail -->
         <div class="flex flex-col justify-center">
           <span
             class="mb-3 w-fit rounded-full border px-3 py-1 text-xs"
             :class="
               product.stock > 0
-                ? 'border-green-400/30 bg-green-400/20 text-green-600'
+                ? 'border-white/20 bg-white/80 px-3 py-1 text-[10px] font-bold text-primary backdrop-blur-md'
                 : 'border-red-400/30 bg-red-500/20 text-red-600'
             "
           >
@@ -91,9 +86,7 @@ const buyNow = () => {
             Rp {{ formatRupiah(product.price) }}
           </p>
 
-          <p class="mt-2 text-sm text-primary/60">
-            Stok: {{ product.stock }}
-          </p>
+          <p class="mt-2 text-sm text-primary/60">Stok: {{ product.stock }}</p>
 
           <div class="mt-6 grid grid-cols-2 gap-3">
             <button
@@ -123,4 +116,5 @@ const buyNow = () => {
       </div>
     </div>
   </section>
+  <Footer />
 </template>

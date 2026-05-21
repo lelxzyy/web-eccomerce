@@ -5,10 +5,61 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 @theme {
-  --color-primary: #190019;
-  --color-secondary: #2B124C;
-  --color-accent: #522B5B;
-  --color-accent2: #854F6C;
-  --color-soft: #DFB6B2;
+  /* MAIN */
+  --color-primary: #2B124C;
+  --color-secondary: #522B5B;
+
+  /* ACCENT */
+  --color-accent: #854F6C;
+  --color-accent2: #B084A7;
+
+  /* BACKGROUND */
+  --color-background: #FFF9FD;
+  --color-surface: #FFFFFF;
+
+  /* SOFT */
+  --color-soft: #F3D7E3;
   --color-base: #FBE4D8;
+
+  /* CARD */
+  --color-card: #FFFFFF;
+  --color-card-hover: #FFF4FA;
+
+  /* TEXT */
+  --color-text: #2B124C;
+  --color-text-soft: rgba(43, 18, 76, 0.65);
+  --color-text-light: #FFFFFF;
+
+  /* BORDER */
+  --color-border: rgba(82, 43, 91, 0.08);
+
+  /* SHADOW */
+  --shadow-primary:
+    0 10px 30px rgba(82, 43, 91, 0.08);
+
+  --shadow-hover:
+    0 20px 40px rgba(82, 43, 91, 0.16);
+
+  /* GRADIENT */
+  --gradient-primary:
+    linear-gradient(
+      135deg,
+      #FFF9FD 0%,
+      #FDF4FF 50%,
+      #F8ECFF 100%
+    );
+
+  --gradient-accent:
+    linear-gradient(
+      135deg,
+      #854F6C 0%,
+      #522B5B 100%
+    );
+
+  --gradient-soft:
+    linear-gradient(
+      135deg,
+      #FFFFFF 0%,
+      #FFF4FA 100%
+    );
 }

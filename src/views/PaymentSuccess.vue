@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted } from "vue"
-import { useRouter } from "vue-router"
-import { useCartStore } from "@/stores/cartStore"
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useCartStore } from '@/stores/cartStore'
 
 const router = useRouter()
 const cartStore = useCartStore()
@@ -12,20 +12,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="min-h-screen bg-white px-5 pt-28 pb-10 text-primary">
+  <section class="min-h-screen bg-background px-5 pt-28 pb-10 text-primary">
     <div class="mx-auto flex max-w-3xl flex-col items-center text-center">
-
       <div class="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
         <span class="text-5xl">✅</span>
       </div>
 
-      <h1 class="text-3xl font-bold md:text-5xl">
-        Pembayaran Berhasil
-      </h1>
+      <h1 class="text-3xl font-bold md:text-5xl">Pembayaran Berhasil</h1>
 
       <p class="mt-4 max-w-xl text-sm text-primary">
-        Terima kasih, pembayaran kamu sudah berhasil diproses.
-        Pesanan akan segera kami lanjutkan.
+        Terima kasih, pembayaran kamu sudah berhasil diproses. Pesanan akan segera kami lanjutkan.
       </p>
 
       <div class="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -43,7 +39,6 @@ onMounted(() => {
           Kembali ke Home
         </button>
       </div>
-
     </div>
   </section>
 </template>

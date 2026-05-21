@@ -1,8 +1,15 @@
 <script setup lang="ts">
-import { onMounted, computed } from "vue"
-import { useProductStore } from "@/stores/productStore"
-import ProductCard from "@/components/Products/ProductCard.vue"
-import Footer from "@/components/Footer.vue"
+import { onMounted, computed } from 'vue'
+import { useProductStore } from '@/stores/productStore'
+
+import Footer from '@/components/AppFooter.vue'
+
+import BannerSection from '@/components/Home/BannerSection.vue'
+//import CategorySection from "@/components/Home/CategorySection.vue"
+import PromoSection from '@/components/Home/PromoSection.vue'
+import RecommendationSection from '@/components/Home/RecommendationSection.vue'
+import WhyChooseUsSection from '@/components/Home/WhyChooseUsSection.vue'
+
 const productStore = useProductStore()
 
 onMounted(() => {
@@ -15,7 +22,7 @@ const rekomendasi = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white pt-20 text-primary">
+  <div class="min-h-screen bg-background pt-20 text-primary">
     <!-- HERO -->
     <section class="relative overflow-hidden border-b border-primary/10">
       <!-- Background Glow -->
@@ -39,69 +46,29 @@ const rekomendasi = computed(() => {
           Lelxzyy.Shop
         </h1>
 
-        <p class="text-sm text-primary/70 ">
+        <p class="text-sm text-primary/70">
           Menyediakan segala keperluan outfit kamu <br />
           dapatkan sekarang!
         </p>
       </div>
     </section>
 
+    <!-- BANNER -->
+    <BannerSection />
+
+    <!-- PROMO -->
+    <PromoSection />
+
     <!-- REKOMENDASI -->
-    <section class="py-8">
-      <div class="mx-auto max-w-5xl px-4 text-center">
-        <h2 class="text-2xl font-extrabold text-primary">
-          Rekomendasi
-        </h2>
+    <RecommendationSection :products="rekomendasi" :loading="productStore.loading" />
 
-        <p class="mt-1 text-sm text-primary/70">
-          Buat kamu yang lagi bingung milih outfit
-        </p>
+    <!-- WHY CHOOSE US -->
+    <WhyChooseUsSection />
 
-        <!-- Loading -->
-        <div
-          v-if="productStore.loading"
-          class="mt-8 grid gap-5 md:grid-cols-3"
-        >
-          <div
-            v-for="n in 3"
-            :key="n"
-            class="h-[260px] animate-pulse rounded-2xl bg-white/70 shadow-sm"
-          ></div>
-        </div>
-
-        <!-- Product Recommendation -->
-        <div
-          v-else-if="rekomendasi.length > 0"
-          class="mt-8 grid gap-5 md:grid-cols-3"
-        >
-          <ProductCard
-            v-for="product in rekomendasi"
-            :key="product.id"
-            :product="product"
-          />
-        </div>
-
-        <!-- Empty -->
-        <div
-          v-else
-          class="mt-8 rounded-2xl bg-white/70 p-8 shadow-sm"
-        >
-          <p class="text-sm text-primary/70">
-            Belum ada produk rekomendasi.
-          </p>
-        </div>
-
-        <router-link
-          to="/product"
-          class="mt-8 inline-block rounded-full bg-accent2 px-6 py-3 text-sm font-bold text-white transition hover:bg-accent"
-        >
-          Lihat Semua Produk
-        </router-link>
-      </div>
-    </section>
-
-    <!-- SECTION BAWAH -->
-    <section class="min-h-[300px]"></section>
+    <!-- SPACER -->
+    <section class="min-h-[100px]"></section>
   </div>
+
+  <!-- Footer -->
   <Footer />
 </template>
